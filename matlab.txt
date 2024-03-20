@@ -1,0 +1,95 @@
+% Read an image
+I = imread('river-1.jpeg');
+% Display the results
+subplot(2,2,1), imshow(I), title('Original Image');
+
+%NOISE REDUCTION
+% Read the image
+image = imread('new-river3.jpeg');
+
+% Define the standard deviation for Gaussian smoothing
+sigma = 1; % You can adjust this value based on your requirement
+
+% Apply Gaussian smoothing with the specified standard deviation
+smoothed_image = imgaussfilt(image, sigma);
+
+% Display the original and smoothed images
+figure;
+subplot(1, 2, 1);
+imshow(image);
+title('Original Image');
+
+subplot(1, 2, 2);
+imshow(smoothed_image);
+title('Smoothed Image ');
+
+%COLOR CORRECTION-> power correction
+
+% Read the colored image
+colored_image = imread('smoothed--new-river3.png');
+
+% Define gamma value (e.g., 0.5 for darkening or 2 for brightening)
+gamma = 0.8;
+
+% Apply gamma correction to each color channel separately
+gamma_corrected_image = uint8(double(colored_image).^gamma);
+
+% Display the original and gamma-corrected images
+figure;
+subplot(1, 2, 1);
+imshow(colored_image);
+title('Original Colored Image');
+
+subplot(1, 2, 2);
+imshow(gamma_corrected_image);
+title('Gamma Corrected Colored Image');
+
+%CONTRAST
+
+shadow = imread("corrected-river3.png");
+shadow_lab = rgb2lab(shadow);
+
+max_luminosity = 100;
+L = shadow_lab(:,:,1)/max_luminosity;
+shadow_imadjust = shadow_lab;
+shadow_imadjust(:,:,1) = imadjust(L)*max_luminosity;
+shadow_imadjust = lab2rgb(shadow_imadjust);
+
+% Display original image
+figure
+imshow(shadow)
+title("Original Image")
+
+% Display enhanced images in separate figures
+figure
+imshow(shadow_imadjust)
+title("Enhanced Image using imadjust")
+
+%sobel plus edges
+
+% Read the original image
+original_image = imread('contrast-new-river1.png');
+
+% Convert the original image to grayscale
+gray_image = rgb2gray(original_image);
+
+% Apply Sobel edge detection
+[gradient_mag, ~] = imgradient(gray_image, 'sobel');
+
+% Threshold the gradient magnitude image
+threshold = 100; % Adjust threshold as needed
+edges = gradient_mag > threshold;
+
+% Overlay the edges on the original image
+outlined_image = original_image;
+outlined_image(repmat(edges, [1 1 3])) = 255; % Set edge pixels to white
+
+% Display the original image
+figure;
+imshow(original_image);
+title('Original Image');
+
+% Display the Sobel edge-detected and outlined image
+figure;
+imshow(outlined_image);
+title('Sobel Edge Detected and Outlined Image');
